@@ -3,9 +3,10 @@ import React from 'react';
 interface CelloFingerboardProps {
     activeString?: string | null; // 'C', 'G', 'D', 'A'
     activeFinger?: string | null; // '0', '1', '2', '3', '4'
+    onFingerClick?: (string: string, finger: string) => void;
 }
 
-const CelloFingerboard: React.FC<CelloFingerboardProps> = ({ activeString, activeFinger }) => {
+const CelloFingerboard: React.FC<CelloFingerboardProps> = ({ activeString, activeFinger, onFingerClick }) => {
     // Strings from left to right: C, G, D, A
     const strings = ['C', 'G', 'D', 'A'];
     const stringXPositions = {
@@ -73,8 +74,37 @@ const CelloFingerboard: React.FC<CelloFingerboardProps> = ({ activeString, activ
                                 strokeWidth="2"
                             />
                         )}
+                        {/* Indication for open string selection */}
+                        {parsedFinger === '0' && (
+                            <circle
+                                cx={stringXPositions[activeString as keyof typeof stringXPositions]}
+                                cy={fingerYPositions['0']}
+                                r={8}
+                                fill="#FF4500"
+                                stroke="white"
+                                strokeWidth="2"
+                            />
+                        )}
                     </>
                 )}
+
+                {/* Interactive Overlay */}
+                {onFingerClick && strings.map((str) => {
+                    const xPos = stringXPositions[str as keyof typeof stringXPositions];
+                    return Object.entries(fingerYPositions).map(([finger, yPos]) => (
+                        <circle
+                            key={`${str}-${finger}`}
+                            cx={xPos}
+                            cy={yPos}
+                            r={18} // Hit area
+                            fill="transparent"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => onFingerClick(str, finger)}
+                        >
+                            <title>{`String ${str}, Finger ${finger}`}</title>
+                        </circle>
+                    ));
+                })}
             </svg>
         </div>
     );
