@@ -3,9 +3,10 @@ import React from 'react';
 interface PianoKeyboardProps {
     activeNote?: string | null; // e.g., "c/2", "eb/3"
     isActive: boolean;
+    onNoteClick?: (note: string) => void;
 }
 
-const PianoKeyboard: React.FC<PianoKeyboardProps> = ({ activeNote, isActive }) => {
+const PianoKeyboard: React.FC<PianoKeyboardProps> = ({ activeNote, isActive, onNoteClick }) => {
     // Define range C2 to E4
     // We need to map keys to positions.
     // White keys have constant width. Black keys are offset.
@@ -108,6 +109,8 @@ const PianoKeyboard: React.FC<PianoKeyboardProps> = ({ activeNote, isActive }) =
                         fill={k.isHighlighted ? '#FF4500' : 'white'}
                         stroke="black"
                         strokeWidth="1"
+                        style={{ cursor: onNoteClick ? 'pointer' : 'default' }}
+                        onClick={() => onNoteClick && onNoteClick(k.ids[0])}
                     />
                 ))}
 
@@ -122,6 +125,8 @@ const PianoKeyboard: React.FC<PianoKeyboardProps> = ({ activeNote, isActive }) =
                         fill={k.isHighlighted ? '#FF4500' : 'black'}
                         stroke="black"
                         strokeWidth="1"
+                        style={{ cursor: onNoteClick ? 'pointer' : 'default' }}
+                        onClick={() => onNoteClick && onNoteClick(k.ids[0])}
                     />
                 ))}
             </svg>

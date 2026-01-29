@@ -125,8 +125,12 @@ function App() {
   };
 
   const handleCorrect = () => {
+    const feedbackText = instrument === 'cello'
+      ? `Correct! (${currentNote.string} String, Finger ${currentNote.finger})`
+      : 'Correct!';
+
     setFeedback({
-      text: `Correct! (${currentNote.string} String, Finger ${currentNote.finger})`,
+      text: feedbackText,
       type: 'correct'
     });
     playNote(currentNote.key, instrument);
@@ -143,6 +147,36 @@ function App() {
       setFeedback({ text: '', type: '' });
       setInput('');
     }, 800);
+  };
+
+  const handlePianoClick = (noteId: string) => {
+    if (quizMode !== 'clef-to-finger') return;
+    if (feedback.text !== '') return;
+
+    // Helper to check match (including enharmonics)
+    const isMatch = (target: string, guess: string) => {
+      if (target === guess) return true;
+      const map: { [key: string]: string } = {
+        'c#': 'db', 'db': 'c#',
+        'd#': 'eb', 'eb': 'd#',
+        'f#': 'gb', 'gb': 'f#',
+        'g#': 'ab', 'ab': 'g#',
+        'a#': 'bb', 'bb': 'a#'
+      };
+      const [tNote, tOct] = target.split('/');
+      const [gNote, gOct] = guess.split('/');
+
+      if (tOct !== gOct) return false;
+      if (map[tNote] === gNote) return true;
+
+      return false;
+    };
+
+    if (isMatch(currentNote.key, noteId)) {
+      handleCorrect();
+    } else {
+      handleWrong();
+    }
   };
 
   return (
@@ -218,6 +252,7 @@ function App() {
           <PianoKeyboard
             activeNote={currentNote.key}
             isActive={feedback.type === 'correct' || quizMode === 'finger-to-note'}
+            onNoteClick={quizMode === 'clef-to-finger' ? handlePianoClick : undefined}
           />
         )}
       </div>
@@ -225,7 +260,7 @@ function App() {
       {/* Input Section */}
       <div className="card">
         {quizMode === 'clef-to-finger' ? (
-          <p>Click the correct position on the Cello Fingerboard!</p>
+          <p>Click the correct position on the Instrument!</p>
         ) : (
           <>
             <p>Type the pitch name (A-G):</p>
