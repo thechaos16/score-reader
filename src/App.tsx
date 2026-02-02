@@ -223,7 +223,7 @@ function App() {
         </select>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', alignItems: 'flex-start', marginTop: '20px' }}>
+      <div className="game-container">
 
         {/* Clef Display: Hidden in finger-to-note mode */}
         {quizMode !== 'finger-to-note' && (
