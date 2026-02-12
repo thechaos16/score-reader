@@ -97,7 +97,10 @@ const PianoKeyboard: React.FC<PianoKeyboardProps> = ({ activeNote, isActive, onN
 
     return (
         <div style={{ padding: '10px', background: 'white', borderRadius: '8px' }}>
-            <svg width={xOffset} height={whiteKeyHeight}>
+            <svg
+                viewBox={`0 0 ${xOffset} ${whiteKeyHeight}`}
+                style={{ width: '100%', height: 'auto', maxWidth: '360px' }}
+            >
                 {/* Render White Keys First */}
                 {whiteKeys.map((k, i) => (
                     <rect

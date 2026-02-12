@@ -32,7 +32,6 @@ const BASS_CLEF_NOTES = [
   { key: 'd/4', name: 'D', string: 'A', finger: '4' },
 ];
 
-const TIME_LIMIT = 5;
 
 type QuizMode = 'clef-to-note' | 'clef-to-finger' | 'finger-to-note';
 
@@ -44,30 +43,11 @@ function App() {
     type: '',
   });
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
-  const [isTimerEnabled, setIsTimerEnabled] = useState(false);
+
   const [instrument, setInstrument] = useState<Instrument>('cello');
   const [quizMode, setQuizMode] = useState<QuizMode>('clef-to-note');
 
-  useEffect(() => {
-    if (feedback.text !== '') return;
-    if (!isTimerEnabled) return;
 
-    if (timeLeft === 0) {
-      setFeedback({ text: "Time's up!", type: 'wrong' });
-      const timeoutId = setTimeout(() => {
-        setFeedback({ text: '', type: '' });
-        pickRandomNote();
-      }, 1000);
-      return () => clearTimeout(timeoutId);
-    }
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [timeLeft, feedback.text, isTimerEnabled]);
 
   useEffect(() => {
     pickRandomNote();
@@ -84,7 +64,6 @@ function App() {
     const randomIndex = Math.floor(Math.random() * BASS_CLEF_NOTES.length);
     setCurrentIndex(randomIndex);
     setInput('');
-    setTimeLeft(TIME_LIMIT);
     // Play sound on new note
     playNote(BASS_CLEF_NOTES[randomIndex].key, instrument);
   };
@@ -199,14 +178,8 @@ function App() {
 
       <p>Score: {score}</p>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-        <p style={{ margin: 0 }}>Time Left: {timeLeft}s</p>
-        <button
-          onClick={() => setIsTimerEnabled(!isTimerEnabled)}
-          style={{ padding: '4px 8px', fontSize: '0.9rem', cursor: 'pointer' }}
-        >
-          {isTimerEnabled ? '⏸ Pause' : '▶ Resume'}
-        </button>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+
         <button
           onClick={() => playNote(currentNote.key, instrument)}
           style={{ padding: '4px 8px', fontSize: '0.9rem', cursor: 'pointer' }}
@@ -230,30 +203,33 @@ function App() {
           <ScoreDisplay note={currentNote.key} />
         )}
 
-        {instrument === 'cello' ? (
-          <CelloFingerboard
-            // Active String/Finger:
-            // Mode 1: Show only on correct
-            // Mode 2: Show only on correct (User clicks to guess)
-            // Mode 3: Always show (User guesses note based on this)
-            activeString={
-              quizMode === 'finger-to-note'
-                ? currentNote.string
-                : (feedback.type === 'correct' ? currentNote.string : null)
-            }
-            activeFinger={
-              quizMode === 'finger-to-note'
-                ? currentNote.finger
-                : (feedback.type === 'correct' ? currentNote.finger : null)
-            }
-            onFingerClick={quizMode === 'clef-to-finger' ? handleFingerClick : undefined}
-          />
-        ) : (
-          <PianoKeyboard
-            activeNote={currentNote.key}
-            isActive={feedback.type === 'correct' || quizMode === 'finger-to-note'}
-            onNoteClick={quizMode === 'clef-to-finger' ? handlePianoClick : undefined}
-          />
+        {/* Instruments: Hidden in clef-to-note mode */}
+        {quizMode !== 'clef-to-note' && (
+          instrument === 'cello' ? (
+            <CelloFingerboard
+              // Active String/Finger:
+              // Mode 1: Show only on correct
+              // Mode 2: Show only on correct (User clicks to guess)
+              // Mode 3: Always show (User guesses note based on this)
+              activeString={
+                quizMode === 'finger-to-note'
+                  ? currentNote.string
+                  : (feedback.type === 'correct' ? currentNote.string : null)
+              }
+              activeFinger={
+                quizMode === 'finger-to-note'
+                  ? currentNote.finger
+                  : (feedback.type === 'correct' ? currentNote.finger : null)
+              }
+              onFingerClick={quizMode === 'clef-to-finger' ? handleFingerClick : undefined}
+            />
+          ) : (
+            <PianoKeyboard
+              activeNote={currentNote.key}
+              isActive={feedback.type === 'correct' || quizMode === 'finger-to-note'}
+              onNoteClick={quizMode === 'clef-to-finger' ? handlePianoClick : undefined}
+            />
+          )
         )}
       </div>
 

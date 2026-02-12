@@ -30,7 +30,10 @@ const CelloFingerboard: React.FC<CelloFingerboardProps> = ({ activeString, activ
 
     return (
         <div style={{ padding: '10px', background: 'white', borderRadius: '8px' }}>
-            <svg width="150" height="300" viewBox="0 0 150 300">
+            <svg
+                viewBox="0 0 150 300"
+                style={{ width: '100%', height: 'auto', maxWidth: '150px' }}
+            >
                 {/* Fingerboard (Nut is at top, widening slightly ideally, but simple rect for now) */}
                 <path d="M 20 20 L 130 20 L 135 300 L 15 300 Z" fill="#333" />
 
