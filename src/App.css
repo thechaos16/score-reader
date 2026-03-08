@@ -21,3 +21,78 @@
     gap: 1rem;
   }
 }
+
+/* Note Input Buttons Layout */
+.note-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.modifier-buttons, .note-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 400px; /* restrict width for better mobile line breaks */
+}
+
+.modifier-btn, .note-btn {
+  padding: 12px 18px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 48px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modifier-btn, .note-btn {
+    background-color: #333;
+    color: #eee;
+    border-color: #555;
+  }
+}
+
+.modifier-btn:hover:not(:disabled), .note-btn:hover:not(:disabled) {
+  background-color: #e0e0e0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modifier-btn:hover:not(:disabled), .note-btn:hover:not(:disabled) {
+    background-color: #444;
+  }
+}
+
+.modifier-btn:active:not(:disabled), .note-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.modifier-btn.active, .note-btn.active {
+  background-color: #2196f3;
+  color: white;
+  border-color: #1976d2;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modifier-btn.active, .note-btn.active {
+    background-color: #1976d2;
+    border-color: #115293;
+  }
+}
+
+.modifier-btn:disabled, .note-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}

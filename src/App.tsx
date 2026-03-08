@@ -37,7 +37,8 @@ type QuizMode = 'clef-to-note' | 'clef-to-finger' | 'finger-to-note';
 
 function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [input, setInput] = useState('');
+  const [selectedNote, setSelectedNote] = useState<string | null>(null);
+  const [selectedAccidental, setSelectedAccidental] = useState<'#' | 'b' | '' | null>(null);
   const [feedback, setFeedback] = useState<{ text: string; type: 'correct' | 'wrong' | '' }>({
     text: '',
     type: '',
@@ -57,36 +58,52 @@ function App() {
   useEffect(() => {
     pickRandomNote();
     setFeedback({ text: '', type: '' });
-    setInput('');
+    setSelectedNote(null);
+    setSelectedAccidental(null);
   }, [quizMode]);
 
   const pickRandomNote = () => {
     const randomIndex = Math.floor(Math.random() * BASS_CLEF_NOTES.length);
     setCurrentIndex(randomIndex);
-    setInput('');
+    setSelectedNote(null);
+    setSelectedAccidental(null);
     // Play sound on new note
     playNote(BASS_CLEF_NOTES[randomIndex].key, instrument);
   };
 
   const currentNote = BASS_CLEF_NOTES[currentIndex];
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let val = e.target.value;
-    if (val.length > 0) {
-      val = val[0].toUpperCase() + val.slice(1);
+  const evaluateGuess = (note: string, accidental: string) => {
+    setSelectedNote(note);
+    setSelectedAccidental(accidental as any); // show selection before resetting
+    
+    const guess = note + accidental;
+    if (guess === currentNote.name) {
+      handleCorrect();
+    } else {
+      handleWrong();
     }
-    setInput(val);
+  };
 
-    // Only process text input for modes that require it
+  const handleNoteClick = (noteLetter: string) => {
     if (quizMode === 'clef-to-finger') return;
+    if (feedback.text !== '') return;
 
-    // Check strict equality if length matches expected length
-    if (val.length === currentNote.name.length) {
-      if (val === currentNote.name) {
-        handleCorrect();
-      } else {
-        handleWrong();
-      }
+    if (selectedAccidental !== null) {
+      evaluateGuess(noteLetter, selectedAccidental);
+    } else {
+      setSelectedNote(prev => prev === noteLetter ? null : noteLetter);
+    }
+  };
+
+  const handleAccidentalClick = (accidental: '#' | 'b' | '') => {
+    if (quizMode === 'clef-to-finger') return;
+    if (feedback.text !== '') return;
+
+    if (selectedNote !== null) {
+      evaluateGuess(selectedNote, accidental);
+    } else {
+      setSelectedAccidental(prev => prev === accidental ? null : accidental);
     }
   };
 
@@ -124,7 +141,8 @@ function App() {
     setFeedback({ text: 'Try again!', type: 'wrong' });
     setTimeout(() => {
       setFeedback({ text: '', type: '' });
-      setInput('');
+      setSelectedNote(null);
+      setSelectedAccidental(null);
     }, 800);
   };
 
@@ -238,17 +256,56 @@ function App() {
         {quizMode === 'clef-to-finger' ? (
           <p>Click the correct position on the Instrument!</p>
         ) : (
-          <>
-            <p>Type the pitch name (A-G):</p>
-            <input
-              type="text"
-              value={input}
-              onChange={handleInputChange}
-              maxLength={2}
-              autoFocus
-              disabled={feedback.type === 'correct'}
-            />
-          </>
+          <div className="note-input-container">
+            <p style={{ margin: '0 0 10px 0' }}>Select Note & Accidental:</p>
+            <div className="note-buttons" style={{ marginBottom: '0.5rem' }}>
+              {['C', 'D', 'E', 'F'].map((note) => (
+                <button
+                  key={note}
+                  className={`note-btn ${selectedNote === note ? 'active' : ''}`}
+                  onClick={() => handleNoteClick(note)}
+                  disabled={feedback.text !== ''}
+                >
+                  {note}
+                </button>
+              ))}
+            </div>
+            <div className="note-buttons" style={{ marginBottom: '0.5rem' }}>
+              {['G', 'A', 'B'].map((note) => (
+                <button
+                  key={note}
+                  className={`note-btn ${selectedNote === note ? 'active' : ''}`}
+                  onClick={() => handleNoteClick(note)}
+                  disabled={feedback.text !== ''}
+                >
+                  {note}
+                </button>
+              ))}
+            </div>
+            <div className="modifier-buttons">
+              <button 
+                className={`modifier-btn ${selectedAccidental === 'b' ? 'active' : ''}`}
+                onClick={() => handleAccidentalClick('b')}
+                disabled={feedback.text !== ''}
+              >
+                b
+              </button>
+              <button 
+                className={`modifier-btn ${selectedAccidental === '' ? 'active' : ''}`}
+                onClick={() => handleAccidentalClick('')}
+                disabled={feedback.text !== ''}
+              >
+                ♮
+              </button>
+              <button 
+                className={`modifier-btn ${selectedAccidental === '#' ? 'active' : ''}`}
+                onClick={() => handleAccidentalClick('#')}
+                disabled={feedback.text !== ''}
+              >
+                #
+              </button>
+            </div>
+          </div>
         )}
 
         {feedback.text && (
