@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import ScoreDisplay from './ScoreDisplay';
 import CelloFingerboard from './CelloFingerboard';
 import PianoKeyboard from './PianoKeyboard';
+import CelloTuner from './CelloTuner';
 import { playNote, Instrument } from './utils/audio';
 import './App.css';
 
@@ -47,6 +48,7 @@ function App() {
 
   const [instrument, setInstrument] = useState<Instrument>('cello');
   const [quizMode, setQuizMode] = useState<QuizMode>('clef-to-note');
+  const [activeTab, setActiveTab] = useState<'quiz' | 'tuner'>('quiz');
 
 
 
@@ -178,9 +180,27 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Bass Clef Quiz</h1>
+      <h1>Score Reader & Cello Tuner</h1>
 
-      {/* Mode Selector */}
+      <div className="tabs">
+        <button 
+          className={`tab-btn ${activeTab === 'quiz' ? 'active' : ''}`} 
+          onClick={() => setActiveTab('quiz')}
+        >
+          Quiz
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'tuner' ? 'active' : ''}`} 
+          onClick={() => setActiveTab('tuner')}
+        >
+          Tuner
+        </button>
+      </div>
+
+      <div className="tab-content">
+        {activeTab === 'quiz' ? (
+          <div className="quiz-tab">
+            {/* Mode Selector */}
       <div style={{ marginBottom: '1rem' }}>
         <label>Mode: </label>
         <select
@@ -312,6 +332,11 @@ function App() {
           <div className={`feedback ${feedback.type}`}>
             {feedback.text}
           </div>
+        )}
+      </div>
+          </div>
+        ) : (
+          <CelloTuner />
         )}
       </div>
     </div>

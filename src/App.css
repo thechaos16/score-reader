@@ -96,3 +96,184 @@
   cursor: not-allowed;
   transform: none;
 }
+/* Tabs */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  border: none;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background-color: var(--bg-color);
+}
+
+.tab-btn.active {
+  background-color: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+}
+
+.tab-content {
+  width: 100%;
+}
+
+/* Tuner Styles */
+.tuner-card {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.tuner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tuner-header h2 {
+  margin: 0;
+}
+
+.tuning-btn {
+  padding: 8px 16px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.tuning-btn.active {
+  background-color: #f44336;
+}
+
+.tuner-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin: 20px 0;
+  padding: 20px;
+  background: var(--bg-color);
+  border-radius: 12px;
+}
+
+
+
+.tuner-gauge-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  justify-content: center;
+}
+
+.flat-label, .sharp-label {
+  font-weight: bold;
+  color: #888;
+}
+
+.tuner-gauge {
+  position: relative;
+  width: 200px;
+  height: 20px;
+  background: #ddd;
+  border-radius: 10px;
+  overflow: visible;
+}
+
+.gauge-center-line {
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  bottom: -5px;
+  width: 2px;
+  background: #333;
+  z-index: 2;
+}
+
+.gauge-needle {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 4px;
+  height: 40px;
+  background: #f44336;
+  transform-origin: bottom center;
+  z-index: 3;
+  transition: transform 0.1s ease-out, background-color 0.2s;
+  border-radius: 2px;
+}
+
+.gauge-needle.in-tune {
+  background: #4CAF50;
+}
+
+.closest-note {
+  text-align: center;
+}
+
+.closest-note h3 {
+  font-size: 3rem;
+  margin: 10px 0;
+}
+
+.tuning-status {
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 5px 15px;
+  border-radius: 20px;
+  background: #eee;
+}
+
+.tuning-status.in-tune {
+  background: #e8f5e9;
+  color: #4CAF50;
+}
+
+/* Cello Deck Visualization */
+.cello-deck {
+  width: 140px;
+  height: 250px;
+  background: linear-gradient(to right, #4a2f1d, #6b442a, #4a2f1d);
+  border-radius: 20px 20px 5px 5px;
+  display: flex;
+  justify-content: space-evenly;
+  padding: 0 10px;
+  margin: 0 auto 20px auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,0,0,0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.cello-string {
+  height: 100%;
+  background: linear-gradient(to right, #b0b0b0, #ffffff, #808080);
+  box-shadow: 2px 0 3px rgba(0,0,0,0.3);
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.cello-string.string-a { width: 2px; }
+.cello-string.string-d { width: 3px; }
+.cello-string.string-g { width: 4.5px; }
+.cello-string.string-c { width: 6px; }
+
+.cello-string.active {
+  background: linear-gradient(to right, #4facfe, #00f2fe, #4facfe);
+  box-shadow: 0 0 10px #00f2fe, 0 0 20px #00f2fe;
+}
