@@ -277,3 +277,29 @@
   background: linear-gradient(to right, #4facfe, #00f2fe, #4facfe);
   box-shadow: 0 0 10px #00f2fe, 0 0 20px #00f2fe;
 }
+
+@media (max-width: 600px) {
+  .tuner-display {
+    padding: 15px;
+    gap: 15px;
+  }
+
+  .cello-deck {
+    width: 100px;
+    height: 160px;
+    margin-bottom: 10px;
+  }
+
+  .cello-string.string-a { width: 1.5px; }
+  .cello-string.string-d { width: 2px; }
+  .cello-string.string-g { width: 3px; }
+  .cello-string.string-c { width: 4px; }
+
+  .tuner-gauge {
+    width: 150px;
+  }
+
+  .closest-note h3 {
+    font-size: 2rem;
+  }
+}
