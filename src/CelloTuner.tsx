@@ -17,6 +17,8 @@ export default function CelloTuner() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const pitchHistoryRef = useRef<number[]>([]);
+  const smoothedCentsRef = useRef<number>(0);
 
   const startTuner = async () => {
     try {
@@ -62,31 +64,48 @@ export default function CelloTuner() {
     const detectedPitch = autoCorrelate(buffer, audioContextRef.current.sampleRate);
     
     if (detectedPitch > -1) {
-      setPitch(detectedPitch);
+      // Median filtering for pitch stability
+      const history = pitchHistoryRef.current;
+      history.push(detectedPitch);
+      if (history.length > 5) {
+        history.shift();
+      }
       
-      // Find closest string
+      const sortedHistory = [...history].sort((a, b) => a - b);
+      const medianPitch = sortedHistory[Math.floor(sortedHistory.length / 2)];
+
+      setPitch(medianPitch);
+      
+      // Find closest string using median pitch
       let closestString = STRINGS[0];
       let minDiff = Infinity;
       
       for (const s of STRINGS) {
         // Cents calculation: cents = 1200 * Math.log2(freq / targetFreq)
-        const cents = 1200 * Math.log2(detectedPitch / s.freq);
+        const cents = 1200 * Math.log2(medianPitch / s.freq);
         if (Math.abs(cents) < Math.abs(minDiff)) {
           minDiff = cents;
           closestString = s;
         }
       }
 
-      // If we are wildly off all strings (e.g., catching background noise far from a string), we cap the visual
-      const cappedCents = Math.max(-50, Math.min(50, minDiff));
-      const inTune = Math.abs(minDiff) < 10;
+      // Cap visually
+      const targetCents = Math.max(-50, Math.min(50, minDiff));
+      
+      // Exponential Moving Average for needle smoothing
+      const alpha = 0.2; // 20% new value, 80% previous value
+      smoothedCentsRef.current = (alpha * targetCents) + ((1 - alpha) * smoothedCentsRef.current);
+
+      const inTune = Math.abs(smoothedCentsRef.current) < 10;
       
       setNoteInfo({
         name: closestString.name,
-        cents: cappedCents,
+        cents: smoothedCentsRef.current,
         inTune
       });
     } else {
+      // Clear history on silence to prevent stale median values
+      pitchHistoryRef.current = [];
       setNoteInfo(prev => prev ? { ...prev, inTune: false } : null);
     }
 
