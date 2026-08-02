@@ -3,6 +3,7 @@ import ScoreDisplay from './ScoreDisplay';
 import CelloFingerboard from './CelloFingerboard';
 import PianoKeyboard from './PianoKeyboard';
 import CelloTuner from './CelloTuner';
+import LivePlayAlong from './LivePlayAlong';
 import { playNote, Instrument } from './utils/audio';
 import './App.css';
 
@@ -48,7 +49,7 @@ function App() {
 
   const [instrument, setInstrument] = useState<Instrument>('cello');
   const [quizMode, setQuizMode] = useState<QuizMode>('clef-to-note');
-  const [activeTab, setActiveTab] = useState<'quiz' | 'tuner'>('quiz');
+  const [activeTab, setActiveTab] = useState<'quiz' | 'tuner' | 'playalong'>('quiz');
 
 
 
@@ -195,10 +196,16 @@ function App() {
         >
           Tuner
         </button>
+        <button 
+          className={`tab-btn ${activeTab === 'playalong' ? 'active' : ''}`} 
+          onClick={() => setActiveTab('playalong')}
+        >
+          Play Along
+        </button>
       </div>
 
       <div className="tab-content">
-        {activeTab === 'quiz' ? (
+        {activeTab === 'quiz' && (
           <div className="quiz-tab">
             {/* Mode Selector */}
       <div style={{ marginBottom: '1rem' }}>
@@ -335,9 +342,9 @@ function App() {
         )}
       </div>
           </div>
-        ) : (
-          <CelloTuner />
         )}
+        {activeTab === 'tuner' && <CelloTuner />}
+        {activeTab === 'playalong' && <LivePlayAlong />}
       </div>
     </div>
   );

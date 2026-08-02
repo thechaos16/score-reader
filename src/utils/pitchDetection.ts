@@ -51,3 +51,28 @@ export function autoCorrelate(buf: Float32Array, sampleRate: number): number {
 
   return sampleRate / T0;
 }
+
+// Converts frequency to note information matching our BASS_CLEF_NOTES keys/names
+export function frequencyToNote(frequency: number): { name: string; key: string; cents: number } | null {
+  if (frequency <= 0 || isNaN(frequency) || !isFinite(frequency)) return null;
+
+  // Standard representation in cello first position
+  const noteNames = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
+  const vexFlowNames = ["c", "c#", "d", "eb", "e", "f", "f#", "g", "ab", "a", "bb", "b"];
+
+  // A4 = 440Hz, MIDI note 69
+  const noteNum = 12 * Math.log2(frequency / 440) + 69;
+  const roundedNoteNum = Math.round(noteNum);
+  
+  const cents = Math.round((noteNum - roundedNoteNum) * 100);
+  
+  const octave = Math.floor(roundedNoteNum / 12) - 1;
+  const noteIndex = (roundedNoteNum % 12 + 12) % 12;
+
+  const name = noteNames[noteIndex];
+  const vexFlowName = vexFlowNames[noteIndex];
+  const key = `${vexFlowName}/${octave}`;
+
+  return { name, key, cents };
+}
+
